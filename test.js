@@ -21,6 +21,7 @@ function cal() {
     for (var i = 0; i < selllog; i++) {
         const fg = selllog[i];
         const cg = getChicang(f.k)
+        cg.store1-=fg.count
         cg.price1
 
     }
