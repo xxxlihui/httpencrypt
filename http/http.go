@@ -5,6 +5,8 @@ import (
 	_rsa "crypto/rsa"
 	"encoding/base64"
 	"fmt"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
 	"httpencrypt/rsa"
 	"io/ioutil"
 	"net/http"
@@ -16,7 +18,7 @@ var client = http.Client{}
 var publicKey *_rsa.PublicKey
 var privateKey *_rsa.PrivateKey
 
-func Start(port, publicKeyString, privateKeyString, token, targetUrl string, isClient bool) error {
+func Start(port, publicKeyString, privateKeyString, token, targetUrl string, isClient, toGBK bool) error {
 	targetUrl = strings.TrimRight(targetUrl, "/")
 	publicKey, err := rsa.LoadPublicKey([]byte(publicKeyString))
 	if err != nil {
@@ -59,6 +61,15 @@ func Start(port, publicKeyString, privateKeyString, token, targetUrl string, isC
 				fmt.Printf("解密失败:%s\n", err.Error())
 				w.WriteHeader(http.StatusBadGateway)
 				return
+			}
+			if toGBK {
+				fmt.Printf("转换到gbk编码:%s", string(bys))
+				bys, err = Utf8ToGbk(bys)
+				if err != nil {
+					fmt.Printf("编码转换失败[%s]\n", r.RequestURI)
+					w.WriteHeader(http.StatusBadGateway)
+					return
+				}
 			}
 		}
 		req, err := http.NewRequest(r.Method, targetUrl+r.URL.Path, bytes.NewReader(bys))
@@ -115,4 +126,12 @@ func copyHeader(source, target http.Header) {
 			target.Add(k, vv)
 		}
 	}
+}
+func Utf8ToGbk(s []byte) ([]byte, error) {
+	reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewEncoder())
+	d, e := ioutil.ReadAll(reader)
+	if e != nil {
+		return nil, e
+	}
+	return d, nil
 }

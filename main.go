@@ -18,7 +18,7 @@ func main() {
 	var publicKey string
 	var isClient bool
 	var targetUrl string
-
+	var toGbk bool
 	app := &cli.App{
 		Name:    "http的rsa加密通讯中间服务",
 		Version: "1.0",
@@ -80,7 +80,7 @@ func main() {
 					if err != nil {
 						return err
 					}
-					err = http.Start(port, publicKey, privateKey, token, targetUrl, isClient)
+					err = http.Start(port, publicKey, privateKey, token, targetUrl, isClient, toGbk)
 					if err != nil {
 						fmt.Printf("启动失败:%s", err.Error())
 					}
@@ -93,6 +93,13 @@ func main() {
 						Usage:       "本地服务器监听的段都,注意前面添加符号\":\"",
 						Destination: &port,
 						EnvVars:     []string{"port", "p"},
+					},
+					&cli.StringFlag{
+						Name:        "GBK",
+						Aliases:     []string{"gbk"},
+						Usage:       "强制专称GBK",
+						Destination: &port,
+						EnvVars:     []string{"GBK", "gbk"},
 					},
 					&cli.StringFlag{
 						Name:        "token",
