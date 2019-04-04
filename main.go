@@ -94,11 +94,12 @@ func main() {
 						Destination: &port,
 						EnvVars:     []string{"port", "p"},
 					},
-					&cli.StringFlag{
+					&cli.BoolFlag{
 						Name:        "GBK",
 						Aliases:     []string{"gbk"},
 						Usage:       "强制专称GBK",
-						Destination: &port,
+						Destination: &toGbk,
+						Value:       false,
 						EnvVars:     []string{"GBK", "gbk"},
 					},
 					&cli.StringFlag{
