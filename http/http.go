@@ -31,6 +31,7 @@ func Start(port, publicKeyString, privateKeyString, token, targetUrl string, isC
 	return http.ListenAndServe(port, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		//进行转发，把路径和内容转发
 		bys, err := ioutil.ReadAll(r.Body)
+		fmt.Printf("请求的内容:\n%s\n", string(bys))
 		if err != nil {
 			fmt.Printf("请求错误[%s]\n", r.RequestURI)
 			w.WriteHeader(http.StatusBadGateway)
