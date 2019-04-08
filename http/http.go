@@ -64,7 +64,7 @@ func Start(port, publicKeyString, privateKeyString, token, targetUrl string, isC
 				return
 			}
 			if toGBK {
-				fmt.Printf("转换到gbk编码:%s", string(bys))
+				fmt.Printf("转换到gbk编码:%s\n", string(bys))
 				bys, err = Utf8ToGbk(bys)
 				if err != nil {
 					fmt.Printf("编码转换失败[%s]\n", r.RequestURI)
@@ -73,6 +73,7 @@ func Start(port, publicKeyString, privateKeyString, token, targetUrl string, isC
 				}
 			}
 		}
+
 		req, err := http.NewRequest(r.Method, targetUrl+r.URL.Path, bytes.NewReader(bys))
 		if err != nil {
 			w.WriteHeader(http.StatusBadGateway)
@@ -130,6 +131,14 @@ func copyHeader(source, target http.Header) {
 }
 func Utf8ToGbk(s []byte) ([]byte, error) {
 	reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewEncoder())
+	d, e := ioutil.ReadAll(reader)
+	if e != nil {
+		return nil, e
+	}
+	return d, nil
+}
+func GbkToUtf8(s []byte) ([]byte, error) {
+	reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewDecoder())
 	d, e := ioutil.ReadAll(reader)
 	if e != nil {
 		return nil, e
